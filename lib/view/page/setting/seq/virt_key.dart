@@ -1,21 +1,14 @@
+import 'package:fl_lib/fl_lib.dart';
 import 'package:flutter/material.dart';
-import 'package:toolbox/core/extension/context/locale.dart';
-import 'package:toolbox/core/extension/context/snackbar.dart';
-import 'package:toolbox/core/extension/order.dart';
-import 'package:toolbox/core/utils/platform/base.dart';
-import 'package:toolbox/data/model/ssh/virtual_key.dart';
-import 'package:toolbox/data/res/logger.dart';
-import 'package:toolbox/data/res/store.dart';
-import 'package:toolbox/data/res/ui.dart';
-import 'package:toolbox/view/widget/cardx.dart';
-
-import '../../../widget/appbar.dart';
+import 'package:server_box/core/extension/context/locale.dart';
+import 'package:server_box/data/model/ssh/virtual_key.dart';
+import 'package:server_box/data/res/store.dart';
 
 class SSHVirtKeySettingPage extends StatefulWidget {
   const SSHVirtKeySettingPage({super.key});
 
   @override
-  _SSHVirtKeySettingPageState createState() => _SSHVirtKeySettingPageState();
+  State<SSHVirtKeySettingPage> createState() => _SSHVirtKeySettingPageState();
 }
 
 class _SSHVirtKeySettingPageState extends State<SSHVirtKeySettingPage> {
@@ -24,25 +17,30 @@ class _SSHVirtKeySettingPageState extends State<SSHVirtKeySettingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(
-        title: Text(l10n.editVirtKeys),
+      appBar: AppBar(title: Text(l10n.editVirtKeys)),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(7),
+            child: _buildOneLineVirtKey().cardx,
+          ),
+          Expanded(child: _buildBody()),
+        ],
       ),
-      body: _buildBody(),
+    );
+  }
+
+  Widget _buildOneLineVirtKey() {
+    return ListTile(
+      title: Text(l10n.onlyOneLine),
+      trailing: StoreSwitch(prop: Stores.setting.horizonVirtKey),
     );
   }
 
   Widget _buildBody() {
-    return ValueListenableBuilder(
-      valueListenable: prop.listenable(),
-      builder: (_, vals, __) {
-        final keys = () {
-          try {
-            return List<int>.from(vals);
-          } catch (e) {
-            Loggers.app.info('SSHVirtKeySettingPage: $e');
-            return VirtKey.values.map((e) => e.index).toList();
-          }
-        }();
+    return ValBuilder(
+      listenable: prop.listenable(),
+      builder: (keys) {
         final disabled = VirtKey.values
             .map((e) => e.index)
             .where((e) => !keys.contains(e))
@@ -67,10 +65,10 @@ class _SSHVirtKeySettingPageState extends State<SSHVirtKeySettingPage> {
           itemCount: allKeys.length,
           onReorder: (o, n) {
             if (o >= keys.length || n >= keys.length) {
-              context.showSnackBar(l10n.disabled);
+              context.showSnackBar(libL10n.disabled);
               return;
             }
-            keys.moveByItem(keys, o, n, property: prop);
+            keys.moveByItem(o, n, property: prop);
           },
         );
       },

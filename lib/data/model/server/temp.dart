@@ -1,5 +1,3 @@
-import 'package:toolbox/data/res/store.dart';
-
 class Temperatures {
   final Map<String, double> _map = {};
 
@@ -37,20 +35,12 @@ class Temperatures {
     if (_map.isEmpty) {
       return null;
     }
-    final preferTemperatureDevs = Stores.setting.preferTemperatureDevs.fetch();
-    if (preferTemperatureDevs.isNotEmpty) {
-      for (final key in preferTemperatureDevs) {
-        if (_map.containsKey(key)) {
-          return _map[key];
-        }
-      }
-    }
     for (final key in _cpuTemp) {
       if (_map.containsKey(key)) {
         return _map[key];
       }
     }
-    return _map.values.first;
+    return _map.values.firstOrNull;
   }
 }
 

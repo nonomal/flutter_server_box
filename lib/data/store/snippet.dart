@@ -1,12 +1,16 @@
-import '../../core/persistant_store.dart';
-import '../model/server/snippet.dart';
+import 'package:fl_lib/fl_lib.dart';
 
-class SnippetStore extends PersistentStore {
-  SnippetStore() : super('snippet');
+import 'package:server_box/data/model/server/snippet.dart';
+
+class SnippetStore extends HiveStore {
+  SnippetStore._() : super('snippet');
+
+  static final instance = SnippetStore._();
 
   void put(Snippet snippet) {
-    box.put(snippet.name, snippet);
-    box.updateLastModified();
+    // box.put(snippet.name, snippet);
+    // box.updateLastModified();
+    set(snippet.name, snippet);
   }
 
   List<Snippet> fetch() {
@@ -22,7 +26,8 @@ class SnippetStore extends PersistentStore {
   }
 
   void delete(Snippet s) {
-    box.delete(s.name);
-    box.updateLastModified();
+    // box.delete(s.name);
+    // box.updateLastModified();
+    remove(s.name);
   }
 }
